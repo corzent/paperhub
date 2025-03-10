@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ article.title }} - PaperHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #64748b;
+            --background-color: #f8fafc;
+            --card-background: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background-color: var(--card-background);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .article-header {
+            background: linear-gradient(135deg, var(--primary-color), #1d4ed8);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+        }
+
+        .breadcrumb-item a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: white;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .article-card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .article-meta {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .article-author {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .article-author:hover {
+            text-decoration: underline;
+        }
+
+        .badge {
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+        }
+
+        .badge-primary {
+            background-color: #eff6ff;
+            color: var(--primary-color);
+        }
+
+        .badge-secondary {
+            background-color: #f1f5f9;
+            color: var(--secondary-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+            border-color: #1d4ed8;
+        }
+
+        .article-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .article-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .related-articles {
+            margin-top: 3rem;
+        }
+
+        .related-article-card {
+            border: none;
+            border-radius: 1rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .related-article-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold text-primary" href="{% url 'article-list' %}">
+                <i class="bi bi-journal-text me-2"></i>PaperHub
+            </a>
+        </div>
+    </nav>
+
+    <header class="article-header">
+        <div class="container">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'article-list' %}">Articles</a></li>
+                    <li class="breadcrumb-item active">{{ article.title }}</li>
+                </ol>
+            </nav>
+        </div>
+    </header>
+    
+    <div class="container py-4">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <article class="card article-card">
+                    <div class="card-body p-4 p-lg-5">
+                        <h1 class="display-5 fw-bold mb-4">{{ article.title }}</h1>
+                        
+                        <div class="article-meta d-flex align-items-center flex-wrap gap-3 mb-4">
+                            <span>
+                                By <a href="{% url 'author-detail' article.author.id %}" class="article-author">{{ article.author.name }}</a>
+                            </span>
+                            <span class="badge badge-primary">
+                                <i class="bi bi-clock me-1"></i>{{ article.reading_time }} min read
+                            </span>
+                            <span class="badge badge-secondary">
+                                <i class="bi bi-hand-thumbs-up me-1"></i>{{ article.claps }} claps
+                            </span>
+                            <div class="ms-auto d-flex gap-2">
+                                <a href="{{ article.link }}" class="btn btn-primary" target="_blank">
+                                    <i class="bi bi-box-arrow-up-right me-2"></i>Read Original
+                                </a>
+                                <form method="post" action="{% url 'article-delete' article.pk %}" onsubmit="return confirm('Are you sure you want to delete this article?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger">
+                                        <i class="bi bi-trash me-2"></i>Delete
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        
+                        <div class="article-content">
+                            {{ article.text|linebreaks }}
+                        </div>
+                    </div>
+                </article>
+
+                {% if related_articles %}
+                <section class="related-articles">
+                    <h2 class="h4 mb-4">Related Articles</h2>
+                    <div class="row row-cols-1 row-cols-md-3 g-4">
+                        {% for related in related_articles %}
+                        <div class="col">
+                            <div class="card h-100 related-article-card shadow-sm">
+                                <div class="card-body">
+                                    <h3 class="h6 mb-3">{{ related.title }}</h3>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge badge-secondary">
+                                            <i class="bi bi-clock me-1"></i>{{ related.reading_time }} min
+                                        </span>
+                                        <a href="{% url 'article-detail' related.pk %}" class="btn btn-sm btn-outline-primary">Read</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
